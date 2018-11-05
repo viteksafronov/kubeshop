@@ -1,0 +1,64 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}
+  labels:
+    app: {{ .Release.Name }}
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+    spec:
+      initContainers:
+        - name: "composer-install"
+          image: docker.io/composer:latest
+          imagePullPolicy: IfNotPresent
+          command:
+            - "composer"
+            - "install"
+          volumeMounts:
+          - mountPath: /app
+            name: code-source
+      containers:
+        - name: {{ .Chart.Name }}
+          image:  docker.io/php:7.2-fpm
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 9000
+          volumeMounts:
+            - mountPath: /etc/php/7.2/fpm/pool.d/service.conf
+              name: config
+              subPath: service.conf
+            - mountPath: /app
+              name: code-source
+
+        - name: nginx
+          image: docker.io/nginx:latest
+          imagePullPolicy: IfNotPresent
+          volumeMounts:
+            - mountPath: /etc/nginx/nginx.conf
+              name: config
+              subPath: nginx.conf
+          ports:
+            - containerPort: 80
+      volumes:
+      - name: config
+        configMap:
+          name: {{ .Release.Name }}
+          items:
+            - key: php-fpm
+              path: service.conf
+            - key: nginx
+              path: nginx.conf
+      - name: code-source
+        hostPath:
+          path: {{ .Values.mountPath }}

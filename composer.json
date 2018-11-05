@@ -1,0 +1,9 @@
+{
+    "name": "kubeshop/kubeshop",
+    "description": "Test App for kubernetes workshop",
+    "type": "project",
+    "require": {
+        "fzaninotto/faker": "^1.8"
+    },
+    "minimum-stability": "stable"
+}

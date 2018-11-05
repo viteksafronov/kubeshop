@@ -1,0 +1,66 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: {{ .Release.Name }}
+  labels:
+    app: {{ .Release.Name }}
+data:
+  php-fpm: |
+    [global]
+    error_log = /proc/self/fd/2
+
+    [service]
+    listen = 127.0.0.1:9000
+
+    pm = static
+    pm.max_children = 10
+    pm.min_spare_servers = 5
+    pm.max_spare_servers = 35
+    pm.max_requests = 5000
+    pm.status_path = /fpm-status
+
+    request_slowlog_timeout = 45s
+    slowlog = /proc/self/fd/2
+    chdir = /app
+    access.log = /proc/self/fd/2
+    clear_env = no
+
+  nginx: |
+    worker_processes 1;
+
+    error_log /dev/stdout info;
+
+    events {
+        worker_connections 2048;
+    }
+
+    http {
+        include      mime.types;
+        default_type application/octet-stream;
+
+        log_format main '$remote_addr - $remote_user [$time_local] '
+                        '"$request" $status $bytes_sent '
+                        '"$http_referer" "$http_user_agent" '
+                        '"$gzip_ratio"';
+
+        server {
+            listen       80;
+            access_log /dev/stdout;
+            error_page   500 502 503 504  /50x.html;
+
+            location = /50x.html {
+                root   /usr/share/nginx/html;
+            }
+
+            location / {
+                fastcgi_pass   127.0.0.1:9000;
+                fastcgi_buffer_size 32k;
+                fastcgi_buffers 256 32k;
+                fastcgi_pass_header Host;
+                include /etc/nginx/fastcgi_params;
+                fastcgi_param SCRIPT_FILENAME /app/index.php;
+                fastcgi_param SERVER_NAME $host;
+                fastcgi_param REMOTE_ADDR $http_x_real_ip if_not_empty;
+            }
+        }
+    }
