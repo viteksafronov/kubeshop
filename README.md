@@ -73,3 +73,7 @@ minikube start --vm-driver=kvm2
 ```shell
 kubectl get pods --all-namespaces
 ```
+Если всё в порядке, инициализируем tiller — серверную часть helm
+```shell
+helm init
+```

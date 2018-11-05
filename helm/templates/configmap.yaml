@@ -5,26 +5,6 @@ metadata:
   labels:
     app: {{ .Release.Name }}
 data:
-  php-fpm: |
-    [global]
-    error_log = /proc/self/fd/2
-
-    [service]
-    listen = 127.0.0.1:9000
-
-    pm = static
-    pm.max_children = 10
-    pm.min_spare_servers = 5
-    pm.max_spare_servers = 35
-    pm.max_requests = 5000
-    pm.status_path = /fpm-status
-
-    request_slowlog_timeout = 45s
-    slowlog = /proc/self/fd/2
-    chdir = /app
-    access.log = /proc/self/fd/2
-    clear_env = no
-
   nginx: |
     worker_processes 1;
 

@@ -29,15 +29,12 @@ spec:
           - mountPath: /app
             name: code-source
       containers:
-        - name: {{ .Chart.Name }}
+        - name: php-fpm
           image:  docker.io/php:7.2-fpm
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 9000
           volumeMounts:
-            - mountPath: /etc/php/7.2/fpm/pool.d/service.conf
-              name: config
-              subPath: service.conf
             - mountPath: /app
               name: code-source
 
@@ -55,8 +52,6 @@ spec:
         configMap:
           name: {{ .Release.Name }}
           items:
-            - key: php-fpm
-              path: service.conf
             - key: nginx
               path: nginx.conf
       - name: code-source
