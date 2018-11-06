@@ -63,12 +63,12 @@ curl -LO https://storage.googleapis.com/minikube/releases/v0.25.0/docker-machine
 
 ### macOS
 ```shell
-minikube start --vm-driver=hyperkit --mount ~
+minikube start --vm-driver=hyperkit --mount --mount-string ~:/minikube-host
 ```
 
 ### Linux
 ```shell
-minikube start --vm-driver=kvm2 --mount ~
+minikube start --vm-driver=kvm2 --mount --mount-string ~:/minikube-host
 ```
 
 Для проверки работы проверяем список подов
