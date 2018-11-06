@@ -85,5 +85,5 @@ minikube addons enable ingress
 ```
 Переходим в каталог с приложением и запускаем деплой
 ```shell
-helm upgrade --install kubeshop --wait --set mountPath=$(HD=`echo ~`; pwd | sed "s|$HD|/minikube-host|")
+helm upgrade --install kubeshop helm/ --wait --set mountPath=$(HD=`echo ~`; pwd | sed "s|$HD|/minikube-host|")
 ```
