@@ -5,6 +5,8 @@
 
 ### macOS
 
+Если у вас не установлен git, [устанавливаем его](https://git-scm.com/download/mac)
+
 Устанавливаем homebrew, если его нет.
 ```shell
 /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
@@ -61,12 +63,12 @@ curl -LO https://storage.googleapis.com/minikube/releases/v0.25.0/docker-machine
 
 ### macOS
 ```shell
-minikube start --vm-driver=hyperkit
+minikube start --vm-driver=hyperkit --mount ~
 ```
 
 ### Linux
 ```shell
-minikube start --vm-driver=kvm2
+minikube start --vm-driver=kvm2 --mount ~
 ```
 
 Для проверки работы проверяем список подов
@@ -76,4 +78,12 @@ kubectl get pods --all-namespaces
 Если всё в порядке, инициализируем tiller — серверную часть helm
 ```shell
 helm init
+```
+Включаем дополнение ingress
+```shell
+minikube addons enable ingress
+```
+Переходим в каталог с приложением и запускаем деплой
+```shell
+helm upgrade --install kubeshop --wait --set mountPath=$(HD=`echo ~`; pwd | sed "s|$HD|/minikube-host|")
 ```
