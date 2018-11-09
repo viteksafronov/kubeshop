@@ -1,0 +1,24 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: kubeshop
+  labels:
+    app: kubeshop
+spec:
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: kubeshop
+    spec:
+      containers:
+      - name: nginx
+        image: docker.io/nginx:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 80
+      - name: php-fpm
+        image: docker.io/php:7.2-fpm
+        ports:
+        - containerPort: 9000
+

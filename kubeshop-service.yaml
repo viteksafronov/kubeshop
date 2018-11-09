@@ -1,0 +1,10 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: kubeshop-service
+spec:
+  selector:
+    app: kubeshop
+  ports:
+  - port: 80
+    targetPort: 80
